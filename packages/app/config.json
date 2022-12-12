@@ -1,6 +1,6 @@
 {
-  "name": "interchain-safe-portal",
-  "description": "interchain-safe-portal for Privacy-Preserved Onchain Identity",
+  "name": "Interchain SAFE Portal",
+  "description": "Interchain SAFE Portal is a one-stop SAFE deployment portal built with Hyperlane",
   "url": {
     "app": "https://interchain-safe-portal.vercel.app",
     "docs": "https://github.com/taijusanagi/interchain-safe-portal/blob/main/README.md",
