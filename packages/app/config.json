@@ -2,7 +2,7 @@
   "name": "interchain-safe-portal",
   "description": "interchain-safe-portal for Privacy-Preserved Onchain Identity",
   "url": {
-    "app": "https://zk-sbt-five.vercel.app",
+    "app": "https://interchain-safe-portal.vercel.app",
     "docs": "https://github.com/taijusanagi/interchain-safe-portal/blob/main/README.md",
     "github": "https://github.com/taijusanagi/interchain-safe-portal"
   },
