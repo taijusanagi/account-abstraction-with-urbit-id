@@ -111,11 +111,12 @@ const IssuePage: NextPage = () => {
                     _destinationChainId = destinationChainId;
                   }
                   const safeAccountConfig = {
-                    owners: ["0x29893eEFF38C5D5A1B2F693e2d918e618CCFfdD8"],
+                    owners: [connected.signerAddress],
                     threshold: 1,
                   };
                   const safeDeploymentConfig = {
                     saltNonce: `0x${crypto.randomBytes(32).toString("hex")}`,
+                    // saltNonce: "999",
                   };
                   const initializer = connected.gnosisSafe.interface.encodeFunctionData("setup", [
                     safeAccountConfig.owners,
@@ -135,6 +136,7 @@ const IssuePage: NextPage = () => {
                   const provider = new ethers.providers.JsonRpcProvider(networkJsonFile[_destinationChainId].rpc);
                   const ethAdapter = new EthersAdapter({
                     ethers,
+                    // signerOrProvider: connected.signer,
                     signerOrProvider: provider,
                   });
                   const safeFactory = await SafeFactory.create({ ethAdapter });
@@ -142,7 +144,8 @@ const IssuePage: NextPage = () => {
                     safeAccountConfig,
                     safeDeploymentConfig,
                   });
-                  console.log(predictedAddress);
+                  console.log("predictedAddress", predictedAddress);
+                  // this is for test
                   // await safeFactory.deploySafe({ safeAccountConfig, safeDeploymentConfig });
                   setPredictedAddress(predictedAddress);
                   const tx = await connected.interchainAccountRouter.dispatch(

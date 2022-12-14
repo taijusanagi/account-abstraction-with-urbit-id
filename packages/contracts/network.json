@@ -19,6 +19,16 @@
     "explorer": { "name": "BNB Smart Chain Testnet Explorer", "url": "https://testnet.bscscan.com" },
     "domainId": "0x62732d74"
   },
+  "1287": {
+    "key": "moonbeam-testnet",
+    "env": "testnet",
+    "name": "Moonbeam Testnet",
+    "currency": "DEV",
+    "icon": "moonbeam.png",
+    "rpc": "https://moonbase-alpha.public.blastapi.io",
+    "explorer": { "name": "Moonbeam Testnet Explorer", "url": "https://moonbase.moonscan.io/" },
+    "domainId": "0x6d6f2d61"
+  },
   "80001": {
     "key": "polygon-mumbai",
     "env": "testnet",
