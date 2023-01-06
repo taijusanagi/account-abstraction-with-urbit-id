@@ -1,10 +1,10 @@
 {
-  "name": "Interchain SAFE Portal",
-  "description": "Interchain SAFE Portal is a one-stop SAFE deployment portal built with Hyperlane",
+  "name": "AA Wallet with Urbit ID",
+  "description": "Account Abstraction Wallet controlled by Urbit ID",
   "url": {
-    "app": "https://interchain-safe-portal.vercel.app",
-    "docs": "https://github.com/taijusanagi/interchain-safe-portal/blob/main/README.md",
-    "github": "https://github.com/taijusanagi/interchain-safe-portal"
+    "app": "https://account-abstraction-with-urbit-id.vercel.app",
+    "docs": "https://github.com/taijusanagi/account-abstraction-with-urbit-id/blob/main/README.md",
+    "github": "https://github.com/taijusanagi/account-abstraction-with-urbit-id"
   },
   "style": {
     "color": {

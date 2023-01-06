@@ -6,6 +6,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { AppProps } from "next/app";
 import { WagmiConfig } from "wagmi";
 
+import { AAWalletContextProvider } from "@/contexts/AAWalletContext";
 import { ConnectedContextProvider } from "@/contexts/ConnectedContext";
 import { myChakraUITheme, myRainbowKitTheme } from "@/lib/theme";
 import { chains, wagmiClient } from "@/lib/wallet";
@@ -16,7 +17,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains} showRecentTransactions={true} theme={myRainbowKitTheme}>
           <ConnectedContextProvider>
-            <Component {...pageProps} />
+            <AAWalletContextProvider>
+              <Component {...pageProps} />
+            </AAWalletContextProvider>
           </ConnectedContextProvider>
         </RainbowKitProvider>
       </WagmiConfig>

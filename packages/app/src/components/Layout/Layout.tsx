@@ -26,12 +26,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </HStack>
         </Box>
       </Container>
-      <VStack py="6" spacing={"4"}>
-        <Image src={"/assets/icon.png"} w="24" alt="hero" />
-        <Text color={configJsonFile.style.color.accent} fontWeight={"bold"} fontSize="xl">
-          Interchain SAFE Portal
-        </Text>
-      </VStack>
       <Container maxW="lg" flex={1}>
         {children}
       </Container>

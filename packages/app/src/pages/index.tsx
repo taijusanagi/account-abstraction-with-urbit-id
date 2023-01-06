@@ -1,217 +1,172 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  HStack,
-  Input,
-  Link,
-  Select,
-  Stack,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Button, HStack, IconButton, Image, Input, Link, Stack, Text, VStack } from "@chakra-ui/react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { SafeFactory } from "@safe-global/safe-core-sdk";
-import EthersAdapter from "@safe-global/safe-ethers-lib";
-import crypto from "crypto";
-import { ethers } from "ethers";
 import { NextPage } from "next";
-import { useMemo, useState } from "react";
-import QRCode from "react-qr-code";
-
-import { Layout } from "@/components/Layout";
-import { Modal } from "@/components/Modal";
-import { Unit } from "@/components/Unit";
-import { useConnected } from "@/hooks/useConnected";
-import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { AiOutlineQrcode } from "react-icons/ai";
 
 import {
-  HYPERLANE_EXPROLER_URI_BASE,
-  SAFE_CALLBACK_HANDLER,
-  SAFE_FACTORY_ADDRESS,
-  SAFE_IMPLEMENTATION_ADDRESS,
-} from "../../../contracts/config";
-import networkJsonFile from "../../../contracts/network.json";
-import { ChainId } from "../../../contracts/types/network";
+  AccountAbstractionTxStepModal,
+  useAccountAbstractionTxStepModal,
+} from "@/components/AccountAbstractionTxStepModal";
+import { Layout } from "@/components/Layout";
+import { QRCodeScannerModal, useQRCodeScannerModal } from "@/components/QRCodeScannerModal";
+import { Unit } from "@/components/Unit";
+import { useAAWallet } from "@/hooks/useAAWallet";
+import { useConnected } from "@/hooks/useConnected";
+import { useWalletConnect } from "@/hooks/useWalletConnect";
+
 import configJsonFile from "../../config.json";
 
 const IssuePage: NextPage = () => {
+  const router = useRouter();
   const { connected } = useConnected();
   const { openConnectModal } = useConnectModal();
-  const confirmModalDisclosure = useDisclosure();
+  const qrCodeScannerModal = useQRCodeScannerModal();
+  const { instance, id, setId, ...walletConnect } = useWalletConnect();
+  const { aaWallet } = useAAWallet();
+  const { start, hash, ...accountAbstractionTxStepModal } = useAccountAbstractionTxStepModal();
 
-  const [destinationChainId, setDestinationChainId] = useState<ChainId>();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [predictedAddress, setPredictedAddress] = useState("");
-  const [txHash, setTxHash] = useState("");
-
-  const { handle } = useErrorHandler();
-
-  const clear = () => {
-    confirmModalDisclosure.onClose();
-    setIsProcessing(false);
-    setPredictedAddress("");
-    setTxHash("");
-  };
-
-  const filteredDestinationNetwork = useMemo(() => {
-    if (!connected) {
-      return [];
+  useEffect(() => {
+    if (walletConnect.tx) {
+      start(walletConnect.tx);
+      walletConnect.setTx(undefined);
     }
-    return Object.entries(networkJsonFile).filter(([chainId]) => chainId !== connected.chainId);
-  }, [connected]);
+  }, [start, walletConnect]);
 
   return (
     <Layout>
-      <Unit header="Deploy SAFE with Hyperlane">
-        {!connected && (
-          <Button w="full" onClick={openConnectModal}>
-            Connect Wallet
-          </Button>
-        )}
-        {connected && (
-          <Stack>
-            <FormControl>
-              <FormLabel>Source Chain</FormLabel>
-              <Input disabled value={connected.networkConfig.name} fontSize="sm" />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Destination Chain</FormLabel>
-              <Select fontSize="sm" onChange={(e) => setDestinationChainId(e.target.value as ChainId)}>
-                {filteredDestinationNetwork.map(([chainId, { name }]) => {
-                  return (
-                    <option key={chainId} value={chainId}>
-                      {name}
-                    </option>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Owner</FormLabel>
-              <Input disabled value={connected.signerAddress} fontSize="xs" />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Threshold</FormLabel>
-              <Input disabled value={"1"} fontSize="xs" />
-            </FormControl>
+      <VStack py="6" spacing={"4"}>
+        <Image src={"/assets/icon.png"} w="24" alt="hero" />
+        <Text color={configJsonFile.style.color.accent} fontWeight={"bold"} fontSize="xl">
+          {configJsonFile.name}
+        </Text>
+      </VStack>
+      {(!connected || !aaWallet) && (
+        <VStack>
+          <HStack>
             <Button
-              w="full"
-              isLoading={isProcessing}
-              onClick={async () => {
-                try {
-                  setIsProcessing(true);
-                  let _destinationChainId: ChainId;
-                  let destinationDomainId;
-                  if (!destinationChainId) {
-                    destinationDomainId = filteredDestinationNetwork[0][1].domainId;
-                    _destinationChainId = filteredDestinationNetwork[0][0] as ChainId;
-                  } else {
-                    destinationDomainId = networkJsonFile[destinationChainId].domainId;
-                    _destinationChainId = destinationChainId;
-                  }
-                  const safeAccountConfig = {
-                    owners: [connected.signerAddress],
-                    threshold: 1,
-                  };
-                  const safeDeploymentConfig = {
-                    saltNonce: `0x${crypto.randomBytes(32).toString("hex")}`,
-                    // saltNonce: "999",
-                  };
-                  const initializer = connected.gnosisSafe.interface.encodeFunctionData("setup", [
-                    safeAccountConfig.owners,
-                    safeAccountConfig.threshold,
-                    ethers.constants.AddressZero,
-                    "0x",
-                    SAFE_CALLBACK_HANDLER,
-                    ethers.constants.AddressZero,
-                    0,
-                    ethers.constants.AddressZero,
-                  ]);
-                  const data = connected.gnosisSafeProxyFactory.interface.encodeFunctionData("createProxyWithNonce", [
-                    SAFE_IMPLEMENTATION_ADDRESS,
-                    initializer,
-                    safeDeploymentConfig.saltNonce,
-                  ]);
-                  const provider = new ethers.providers.JsonRpcProvider(networkJsonFile[_destinationChainId].rpc);
-                  const ethAdapter = new EthersAdapter({
-                    ethers,
-                    // signerOrProvider: connected.signer,
-                    signerOrProvider: provider,
-                  });
-                  const safeFactory = await SafeFactory.create({ ethAdapter });
-                  const predictedAddress = await safeFactory.predictSafeAddress({
-                    safeAccountConfig,
-                    safeDeploymentConfig,
-                  });
-                  console.log("predictedAddress", predictedAddress);
-                  // this is for test
-                  // await safeFactory.deploySafe({ safeAccountConfig, safeDeploymentConfig });
-                  setPredictedAddress(predictedAddress);
-                  const tx = await connected.interchainAccountRouter.dispatch(
-                    destinationDomainId,
-                    SAFE_FACTORY_ADDRESS,
-                    data
-                  );
-                  setTxHash(`${tx.hash}`);
-                  confirmModalDisclosure.onOpen();
-                } catch (e) {
-                  handle(e);
-                } finally {
-                  setIsProcessing(false);
-                }
+              variant="secondary"
+              onClick={() => {
+                router.push(configJsonFile.url.docs);
               }}
             >
-              Deploy
+              Docs
             </Button>
-            <Modal header="Deployment Detail" onClose={clear} isOpen={confirmModalDisclosure.isOpen}>
-              <Stack spacing="4">
-                <Stack spacing="1">
-                  <Text fontSize="sm" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
-                    Track Tx on Hyperlane
+            <Button onClick={openConnectModal}>Connect Wallet</Button>
+          </HStack>
+        </VStack>
+      )}
+      {connected && aaWallet && (
+        <Stack spacing="2">
+          <Unit header="Wallet" position="relative">
+            <Stack spacing="2">
+              <Stack spacing="1">
+                <Text fontSize="sm" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
+                  Account Abstraction Wallet
+                </Text>
+                <Text fontSize="xs" color={configJsonFile.style.color.link}>
+                  <Link href={`${connected.networkConfig.explorer.url}/address/${aaWallet.address}`} target={"_blank"}>
+                    {aaWallet.address}
+                  </Link>
+                </Text>
+              </Stack>
+              <Stack spacing="1">
+                <Text fontSize="xs" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
+                  ETH
+                </Text>
+                <Text fontSize="xs" color={configJsonFile.style.color.black.text.secondary}>
+                  <Text as="span" mr="1">
+                    {aaWallet.ethFormatedBalance}
                   </Text>
-                  <Text fontSize="xs">
-                    <Link
-                      href={`${HYPERLANE_EXPROLER_URI_BASE}/?search=${txHash}`}
-                      color={configJsonFile.style.color.link}
-                      target="_blank"
-                    >
-                      {`${HYPERLANE_EXPROLER_URI_BASE}/?search=${txHash}`}
-                    </Link>
-                  </Text>
+                  <Text as="span">ETH</Text>
+                </Text>
+              </Stack>
+            </Stack>
+          </Unit>
+          <Unit header="Wallet Connect" position="relative">
+            <Stack>
+              <HStack position="absolute" top="0" right="0" p="4">
+                <Text fontSize="xs" color={configJsonFile.style.color.link} fontWeight="bold">
+                  <Link href={"https://example.walletconnect.org"} target={"_blank"}>
+                    Example
+                  </Link>
+                </Text>
+                <Text fontSize="xs" fontWeight={"bold"}>
+                  <IconButton
+                    size="xs"
+                    variant={"ghost"}
+                    shadow="none"
+                    icon={<AiOutlineQrcode size="24" />}
+                    aria-label="qrcode"
+                    color={configJsonFile.style.color.link}
+                    cursor="pointer"
+                    disabled={!!walletConnect.isConnected}
+                    onClick={qrCodeScannerModal.onOpen}
+                  />
+                </Text>
+              </HStack>
+              <Stack spacing="3.5">
+                <Stack spacing="0">
+                  {!walletConnect.app && (
+                    <Text fontSize="xs" fontWeight={"medium"} color={configJsonFile.style.color.black.text.secondary}>
+                      Not Connected
+                    </Text>
+                  )}
+                  {walletConnect.app && (
+                    <Text fontSize="xs" color={configJsonFile.style.color.black.text.secondary}>
+                      Connected with{" "}
+                      <Link
+                        color={configJsonFile.style.color.link}
+                        href={walletConnect.app.url}
+                        target={"_blank"}
+                        fontWeight={"bold"}
+                      >
+                        {walletConnect.app.name}
+                      </Link>
+                    </Text>
+                  )}
                 </Stack>
-                <Stack spacing="1">
-                  <Text fontSize="sm" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
-                    Predicted SAFE Address
-                  </Text>
-                  <Text fontSize="xs">{predictedAddress}</Text>
-                </Stack>
-                <Stack spacing="1">
-                  <Text fontSize="sm" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
-                    Import to{" "}
-                    <Link
-                      href={"https://gnosis-safe.io/app/load"}
-                      color={configJsonFile.style.color.link}
-                      target="_blank"
-                    >
-                      SAFE App
-                    </Link>
-                  </Text>
-                  <Text fontSize="x-small" color={configJsonFile.style.color.black.text.tertiary}>
-                    * Testnet SAFE App is only available in Georli
-                  </Text>
-                  <Text fontSize="x-small" color={configJsonFile.style.color.black.text.tertiary}>
-                    * Please check relay status in Hyperlane exproler before importing
-                  </Text>
-                  <HStack justify={"center"} py="4">
-                    <QRCode value={predictedAddress} />
-                  </HStack>
+                <Stack>
+                  <Input
+                    placeholder={"wc:"}
+                    type={"text"}
+                    value={walletConnect.uri}
+                    fontSize="xs"
+                    onChange={(e) => walletConnect.setURI(e.target.value)}
+                  />
+                  <Button
+                    variant={!walletConnect.isConnected ? "primary" : "secondary"}
+                    onClick={
+                      !walletConnect.isConnected ? () => walletConnect.connect() : () => walletConnect.disconnect()
+                    }
+                    isLoading={walletConnect.isConnecting}
+                  >
+                    {!walletConnect.isConnected ? "Connect" : "Disconnect"}
+                  </Button>
                 </Stack>
               </Stack>
-            </Modal>
-          </Stack>
-        )}
-      </Unit>
+            </Stack>
+          </Unit>
+        </Stack>
+      )}
+
+      <QRCodeScannerModal
+        isOpen={qrCodeScannerModal.isOpen}
+        onScan={walletConnect.setURI}
+        onClose={qrCodeScannerModal.onClose}
+      />
+
+      <AccountAbstractionTxStepModal
+        mode={accountAbstractionTxStepModal.mode}
+        process={accountAbstractionTxStepModal.process}
+        currentStep={accountAbstractionTxStepModal.currentStep}
+        isProcessing={accountAbstractionTxStepModal.isProcessing}
+        isOpen={accountAbstractionTxStepModal.isOpen}
+        onClose={accountAbstractionTxStepModal.clear}
+        tx={accountAbstractionTxStepModal.accountAbstractionTx}
+        hash={hash}
+      />
     </Layout>
   );
 };

@@ -1,5 +1,5 @@
 {
-  "name": "interchain-safe-portal",
+  "name": "urbit-id-aa-wallet",
   "version": "0.0.1",
   "license": "MIT",
   "private": true,
@@ -12,16 +12,16 @@
     "prepare": "husky install",
     "predev": "yarn prebuild",
     "dev": "run-p dev:*",
-    "dev:app": "yarn workspace @interchain-safe-portal/app dev",
+    "dev:app": "yarn workspace @urbit-id-aa-wallet/app dev",
     "prebuild": "run-p prebuild:*",
-    "prebuild:contracts": "yarn workspace @interchain-safe-portal/contracts build",
+    "prebuild:contracts": "yarn workspace @urbit-id-aa-wallet/contracts build",
     "build": "run-p build:*",
-    "build:app": "yarn workspace @interchain-safe-portal/app build",
+    "build:app": "yarn workspace @urbit-id-aa-wallet/app build",
     "test": "run-p test:*",
-    "test:contracts": "yarn workspace @interchain-safe-portal/contracts test",
+    "test:contracts": "yarn workspace @urbit-id-aa-wallet/contracts test",
     "lint": "run-p lint:*",
-    "lint:app": "yarn workspace @interchain-safe-portal/app lint",
-    "lint:contracts": "yarn workspace @interchain-safe-portal/contracts lint"
+    "lint:app": "yarn workspace @urbit-id-aa-wallet/app lint",
+    "lint:contracts": "yarn workspace @urbit-id-aa-wallet/contracts lint"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",

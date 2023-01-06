@@ -5,10 +5,12 @@ import { HardhatUserConfig } from "hardhat/config";
 
 import { HARDHAT_CHAINID, TIMEOUT } from "./config";
 import { getMnemonic } from "./lib/dev/mnemonic";
+import { getNetworksUserConfigs } from "./lib/dev/network";
 
 dotenv.config();
 
 const mnemonic = getMnemonic("../../mnemonic.txt");
+const networksUserConfigs = getNetworksUserConfigs(mnemonic);
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -31,6 +33,7 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
     },
+    ...networksUserConfigs,
   },
   etherscan: {
     apiKey: {
