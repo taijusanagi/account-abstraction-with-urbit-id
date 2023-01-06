@@ -36,6 +36,12 @@ This is the meta-transaction process with the [ERC4337](https://medium.com/infin
 
 ![erc4337](./docs/erc4337.webp)
 
+Vitalik mentioned signing flexibility in above document
+
+> Verification logic flexibility: the validateUserOp function can add arbitrary signature and nonce verification logic (new signature schemes, multisig…)
+
+We are planning to integrate with Urbit ID for a better signature experience.
+
 ### Interact with Urbit
 
 ![interact-with-urbit](./docs/interact-with-urbit.png)
