@@ -28,7 +28,7 @@ This concept is inspired by the above Encode club \* Urbit workshop
 
 ![account-abstraction](./docs/account-abstraction.png)
 
-This is the meta-transaction process with the ERC4337 account abstraction standard.
+This is the meta-transaction process with the [ERC4337](https://medium.com/infinitism/erc-4337-account-abstraction-without-ethereum-protocol-changes-d75c9d94dc4a) account abstraction standard.
 
 1. Connect dApp with Wallet Connect
 2. The request is sent to the app
