@@ -51,7 +51,7 @@ Vitalik mentioned the following benefit of Account Abstraction in the above arti
 > - Multisigs and social recovery
 > - More efficient and simpler signature algorithms (eg. Schnorr, BLS)
 
-In this MVP, We added Urbit ID as public key management infrastructure, and the contract wallet can inherit key management flexibility from Urbit ID.
+In this MVP, We added Urbit ID as public key management infrastructure on Account Abstraction, and the contract wallet can inherit key management flexibility from Urbit ID.
 
 And [Urbit ID documentation](https://urbit.org/overview/urbit-id) says
 
@@ -69,11 +69,21 @@ In this MVP, it takes the Azumith contract address and token ID for the salt to 
 
 https://github.com/taijusanagi/account-abstraction-with-urbit-id/blob/main/packages/contracts/contracts/AAWallet.sol#L51
 
-### Disclaimer
+### Benefit
 
-Currently, it is hard to use Urbit ID in Geroli, so prepared a mock Azumith contract for a better demo.
+Urbit ID is your wallet now!!
+
+Contract wallets can inherit the same key management with Urbit ID.
 
 ### Future Development
 
+My goal is to bring a better wallet management experience to my users.
+
+So the future development plan would be...
+
 - Flexible key management includes operator
 - Interact with Urbit ID master key
+
+### Disclaimer
+
+Currently, it is hard to use Urbit ID in Geroli, so prepared a mock Azumith contract for a better demo.

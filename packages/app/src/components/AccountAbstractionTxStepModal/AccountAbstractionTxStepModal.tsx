@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Stack, Text } from "@chakra-ui/react";
 
 import { Modal } from "@/components/Modal";
 import { Step } from "@/components/Step";

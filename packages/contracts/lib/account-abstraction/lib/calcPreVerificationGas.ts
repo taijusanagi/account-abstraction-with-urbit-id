@@ -62,6 +62,7 @@ export function calcPreVerificationGas(
     preVerificationGas: 21000, // dummy value, just for calldata cost
     signature: hexlify(Buffer.alloc(65, 1)), // dummy signature
     ...userOp,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
   const packed = arrayify(packUserOp(p));
   const callDataCost = packed.map((x) => (x === 0 ? ov.zeroByte : ov.nonZeroByte)).reduce((sum, x) => sum + x);
