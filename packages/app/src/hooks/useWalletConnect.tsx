@@ -14,9 +14,9 @@ export interface App {
 
 const uriStorageKey = "wallet-connect-uri";
 
-export const useWalletConnect = () => {
+export const useWalletConnect = (urbitId: string) => {
   const { connected } = useConnected();
-  const { aaWallet } = useAAWallet();
+  const { aaWallet } = useAAWallet(urbitId);
 
   const errorToast = useErrorToast();
 
@@ -55,8 +55,8 @@ export const useWalletConnect = () => {
 
   const connect = async () => {
     try {
-      if (!connected) {
-        throw new Error("shinka wallet is not initialized");
+      if (!connected || !aaWallet) {
+        throw new Error("AA wallet is not initialized");
       }
       setIsConnecting(true);
       let instance = new WalletConnect({

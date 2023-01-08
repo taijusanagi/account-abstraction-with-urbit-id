@@ -1,5 +1,5 @@
 {
-  "name": "AA Wallet with Urbit ID",
+  "name": "Urbit ID Wallet",
   "description": "Account Abstraction Wallet controlled by Urbit ID",
   "url": {
     "app": "https://account-abstraction-with-urbit-id.vercel.app",

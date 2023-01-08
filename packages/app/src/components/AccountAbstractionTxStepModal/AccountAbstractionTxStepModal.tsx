@@ -17,6 +17,7 @@ export interface AccountAbstractionTxStepModalProps {
   process: () => void;
   currentStep: number;
   isProcessing: boolean;
+  urbitId: string;
   tx?: Tx;
   hash?: string;
 }
@@ -28,11 +29,12 @@ export const AccountAbstractionTxStepModal: React.FC<AccountAbstractionTxStepMod
   process,
   currentStep,
   isProcessing,
+  urbitId,
   tx,
   hash,
 }) => {
   const { connected } = useConnected();
-  const { aaWallet } = useAAWallet();
+  const { aaWallet } = useAAWallet(urbitId);
   return (
     <Modal header={"Send Account Abstraction Tx"} isOpen={isOpen} onClose={onClose}>
       {connected && aaWallet && tx && (

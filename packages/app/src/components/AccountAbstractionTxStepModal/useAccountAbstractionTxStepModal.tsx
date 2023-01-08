@@ -8,14 +8,14 @@ import { useConnected } from "@/hooks/useConnected";
 import { Tx } from "@/types/Tx";
 
 import { GAS_AMOUNT_FOR_DEPLOY, GAS_AMOUNT_FOR_VERIFICATION } from "../../../../contracts/config";
-import { useErrorToast } from "../../hooks/useErrorToast";
 import { useAAWallet } from "../../hooks/useAAWallet";
+import { useErrorToast } from "../../hooks/useErrorToast";
 import { steps } from "./steps";
-import { AccountAbstractionTxStepModalMode, SignMethod } from "./types";
+import { AccountAbstractionTxStepModalMode } from "./types";
 
-export const useAccountAbstractionTxStepModal = () => {
+export const useAccountAbstractionTxStepModal = (urbitId: string) => {
   const { connected } = useConnected();
-  const { aaWallet } = useAAWallet();
+  const { aaWallet } = useAAWallet(urbitId);
 
   const [accountAbstractionTx, setAccountAbstractionTx] = useState<Tx>();
   const [mode, setMode] = useState<AccountAbstractionTxStepModalMode>("choosePaymentMethod");
@@ -64,6 +64,7 @@ export const useAccountAbstractionTxStepModal = () => {
       const paymasterAndData = "0x";
 
       setStep(0);
+      setIsProcessing(true);
       const op = await aaWallet.userOpHandler.createSignedUserOp({
         ...accountAbstractionTx,
         gasLimit: ethers.BigNumber.from(accountAbstractionTx.gasLimit)

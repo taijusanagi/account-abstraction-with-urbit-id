@@ -1,4 +1,4 @@
-# AA Wallet with Urbit ID
+# Urbit ID Wallet
 
 ![top](./docs/top.png)
 
@@ -6,7 +6,7 @@
 
 ### Live App
 
-TBD
+https://urbit-id-wallet.vercel.app/
 
 ### Pitch Deck
 
@@ -14,11 +14,15 @@ https://docs.google.com/presentation/d/1uyrrvSnV_JtfU4oT_cXduBpttDvWMOpzSBou6nWI
 
 ### Pitch with Demo
 
-TBD
+https://youtu.be/jdXYte9dUss
 
 ## Description
 
-This is the Account Abstraction wallet manager, Urbit ID works as a public key management infrastructure for the Account Abstraction contract wallet.
+This is the Urbit ID wallet App.
+
+It works as the wallet layer of the Urbit ID.
+
+Users can convert Urbit ID to a contract wallet with Account Abstraction.
 
 ## Inspiration
 
@@ -59,8 +63,17 @@ This Account Abstraction approach gives more choices to users and users can enjo
 
 Account Abstraction contract wallet address is calculated counterfactually with create2.
 
+https://github.com/taijusanagi/account-abstraction-with-urbit-id/blob/main/packages/contracts/contracts/AAWalletDeployer.sol#L19
+
 In this MVP, it takes the Azumith contract address and token ID for the salt to verify the user operation signature against the Urbit ID owner.
+
+https://github.com/taijusanagi/account-abstraction-with-urbit-id/blob/main/packages/contracts/contracts/AAWallet.sol#L51
+
+### Disclaimer
+
+Currently, it is hard to use Urbit ID in Geroli, so prepared a mock Azumith contract for a better demo.
 
 ### Future Development
 
-Currently, it asks users to sign the transaction with a normal EOA wallet, but it can be integrated with the Urbit ID wallet directly when Urbit ID gets ready.
+- Flexible key management includes operator
+- Interact with Urbit ID master key
