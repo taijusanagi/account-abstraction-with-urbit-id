@@ -14,7 +14,7 @@ TBD
 
 ## Description
 
-This is the Account Abstraction wallet manager, Urbit works as a non-custodial agent to sign the transaction.
+This is the Account Abstraction wallet manager, Urbit ID works as a public key management infrastructure for the Account Abstraction contract wallet.
 
 ## Inspiration
 
@@ -36,18 +36,29 @@ This is the meta-transaction process with the [ERC4337](https://medium.com/infin
 
 ![erc4337](./docs/erc4337.webp)
 
-Vitalik mentioned signing flexibility in the above document
-
-> Verification logic flexibility: the validateUserOp function can add arbitrary signature and nonce verification logic (new signature schemes, multisig…)
-
-We are planning to integrate with Urbit ID for a better signature experience.
-
-### Interact with Urbit
+### Interact with Urbit ID
 
 ![interact-with-urbit](./docs/interact-with-urbit.png)
 
-In the above process, the request is signed by Metamask, but we are going to sign the transaction with Urbit as a non-custodial agent.
+Vitalik mentioned the following benefit of Account Abstraction in the above article.
+
+> - Multisigs and social recovery
+> - More efficient and simpler signature algorithms (eg. Schnorr, BLS)
+
+In this MVP, We added Urbit ID as public key management infrastructure, and the contract wallet can inherit key management flexibility from Urbit ID.
+
+And [Urbit ID documentation](https://urbit.org/overview/urbit-id) says
+
+> Soon it will also be a master key that allows holding and sending of Bitcoin and other cryptocurrencies.
+
+This Account Abstraction approach gives more choices to users and users can enjoy the feature right now.
 
 ## Technical Detail
 
-TBD
+### Address Calculation and Signature Verification
+
+Account Abstraction contract wallet address is calculated counterfactually with create2.
+
+Create2 calculates salt to determine the contract address, in this MVP, it takes the Azumith contract address and token ID for the salt. In the app, users input the Urbit ID string, then calculate the Urbit ID number (point), then calculate the wallet address with the Urbit ID number.
+
+Account Abstraction user operation signature is verified against the Urbit ID owner address.

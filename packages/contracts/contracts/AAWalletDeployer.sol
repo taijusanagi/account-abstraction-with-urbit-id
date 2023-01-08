@@ -6,8 +6,13 @@ import "./AAWallet.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 
 contract AAWalletDeployer {
-  function deployWallet(IEntryPoint entryPoint, address owner, uint256 salt) public returns (AAWallet) {
-    return new AAWallet{salt: bytes32(salt)}(entryPoint, owner);
+  function deployWallet(
+    IEntryPoint entryPoint,
+    address _azimuth,
+    uint256 _orbitId,
+    uint256 salt
+  ) public returns (AAWallet) {
+    return new AAWallet{salt: bytes32(salt)}(entryPoint, _azimuth, _orbitId);
   }
 
   // this is helper function for rapid development
