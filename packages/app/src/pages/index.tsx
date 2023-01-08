@@ -138,7 +138,8 @@ const HomePage: NextPage = () => {
                     <Text fontSize="xs" color={configJsonFile.style.color.link}>
                       {/* <Link href={`${connected.networkConfig.explorer.url}/address/${aaWallet.address}`} target={"_blank"}>
                     {aaWallet.address}
-                  </Link> */}{" "}
+                  </Link> */}
+                      {"0x84E9445f43995b0C6a4D4C1d40bb123571c2Eb06"}
                     </Text>
                   </Stack>
                   <Stack spacing="1">
@@ -147,7 +148,7 @@ const HomePage: NextPage = () => {
                     </Text>
                     <Text fontSize="xs" color={configJsonFile.style.color.black.text.secondary}>
                       <Text as="span" mr="1">
-                        {/* {aaWallet.ethFormatedBalance} */}
+                        {/* {aaWallet.ethFormatedBalance} */}0
                       </Text>
                       <Text as="span">ETH</Text>
                     </Text>
