@@ -8,7 +8,11 @@
 
 TBD
 
-### Pitch & Demo
+### Pitch Deck
+
+https://docs.google.com/presentation/d/1uyrrvSnV_JtfU4oT_cXduBpttDvWMOpzSBou6nWIxcY/edit?usp=sharing
+
+### Pitch with Demo
 
 TBD
 
@@ -51,10 +55,12 @@ And [Urbit ID documentation](https://urbit.org/overview/urbit-id) says
 
 This Account Abstraction approach gives more choices to users and users can enjoy the feature right now.
 
-## Technical Detail
-
 ![interact-with-urbit](./docs/interact-with-urbit.png)
 
 Account Abstraction contract wallet address is calculated counterfactually with create2.
 
 In this MVP, it takes the Azumith contract address and token ID for the salt to verify the user operation signature against the Urbit ID owner.
+
+### Future Development
+
+Currently, it asks users to sign the transaction with a normal EOA wallet, but it can be integrated with the Urbit ID wallet directly when Urbit ID gets ready.
