@@ -62,3 +62,5 @@ Account Abstraction contract wallet address is calculated counterfactually with 
 Create2 calculates salt to determine the contract address, in this MVP, it takes the Azumith contract address and token ID for the salt. In the app, users input the Urbit ID string, then calculate the Urbit ID number (point), then calculate the wallet address with the Urbit ID number.
 
 Account Abstraction user operation signature is verified against the Urbit ID owner address.
+
+So Urbit ID owner can bring Urbit ID and use it as a wallet without any pre configuration.
