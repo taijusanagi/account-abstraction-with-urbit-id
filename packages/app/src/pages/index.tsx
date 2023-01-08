@@ -1,8 +1,9 @@
 import { Button, HStack, IconButton, Image, Input, Link, Stack, Text, VStack } from "@chakra-ui/react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { ethers } from "ethers";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineQrcode } from "react-icons/ai";
 
 import {
@@ -15,10 +16,18 @@ import { Unit } from "@/components/Unit";
 import { useAAWallet } from "@/hooks/useAAWallet";
 import { useConnected } from "@/hooks/useConnected";
 import { useWalletConnect } from "@/hooks/useWalletConnect";
+import { compareInLowerCase } from "@/lib/utils";
 
 import configJsonFile from "../../config.json";
 
-const IssuePage: NextPage = () => {
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ob = require("urbit-ob");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ajs = require("azimuth-js");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Web3 = require("web3");
+
+const HomePage: NextPage = () => {
   const router = useRouter();
   const { connected } = useConnected();
   const { openConnectModal } = useConnectModal();
@@ -26,6 +35,21 @@ const IssuePage: NextPage = () => {
   const { instance, id, setId, ...walletConnect } = useWalletConnect();
   const { aaWallet } = useAAWallet();
   const { start, hash, ...accountAbstractionTxStepModal } = useAccountAbstractionTxStepModal();
+
+  // urbit id related state
+  const [inputUrbitIdString, setInputUrbitIdString] = useState("");
+  const [calculateUrbitIdNumber, setCalculatedUrbitIdNumber] = useState("invalid");
+  const [owner, setOwner] = useState(ethers.constants.AddressZero);
+
+  useEffect(() => {
+    if (ob.isValidPatq(inputUrbitIdString)) {
+      const tokenId = ob.patp2dec(inputUrbitIdString);
+      setCalculatedUrbitIdNumber(tokenId);
+    } else {
+      setCalculatedUrbitIdNumber("invalid");
+      setOwner(ethers.constants.AddressZero);
+    }
+  }, [inputUrbitIdString]);
 
   useEffect(() => {
     if (walletConnect.tx) {
@@ -42,7 +66,7 @@ const IssuePage: NextPage = () => {
           {configJsonFile.name}
         </Text>
       </VStack>
-      {(!connected || !aaWallet) && (
+      {!connected && (
         <VStack>
           <HStack>
             <Button
@@ -57,60 +81,105 @@ const IssuePage: NextPage = () => {
           </HStack>
         </VStack>
       )}
-      {connected && aaWallet && (
-        <Stack spacing="2">
-          <Unit header="Wallet" position="relative">
-            <Stack spacing="2">
+      {connected && (
+        <Stack>
+          <Unit header="Urbit ID" position="relative">
+            <Stack>
+              <Text fontSize="x-small" color={configJsonFile.style.color.accent}>
+                * Using mock Azimuth contract since Urbit ID is hard to get in Georli
+              </Text>
               <Stack spacing="1">
-                <Text fontSize="sm" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
-                  Account Abstraction Wallet
+                <Text fontSize="xs" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
+                  Input Orbit ID (string)
                 </Text>
-                <Text fontSize="xs" color={configJsonFile.style.color.link}>
-                  <Link href={`${connected.networkConfig.explorer.url}/address/${aaWallet.address}`} target={"_blank"}>
-                    {aaWallet.address}
-                  </Link>
+                <Input
+                  type={"text"}
+                  value={inputUrbitIdString}
+                  fontSize="xs"
+                  onChange={(e) => setInputUrbitIdString(e.target.value)}
+                />
+              </Stack>
+              <Stack spacing="1">
+                <Text fontSize="xs" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
+                  Calculated Orbit ID (number)
+                </Text>
+                <Text fontSize="xs" color={configJsonFile.style.color.black.text.secondary}>
+                  {calculateUrbitIdNumber}
                 </Text>
               </Stack>
               <Stack spacing="1">
                 <Text fontSize="xs" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
-                  ETH
+                  Fetched Orbit ID owner
                 </Text>
                 <Text fontSize="xs" color={configJsonFile.style.color.black.text.secondary}>
-                  <Text as="span" mr="1">
-                    {aaWallet.ethFormatedBalance}
-                  </Text>
-                  <Text as="span">ETH</Text>
+                  {owner}
                 </Text>
               </Stack>
+              <Button
+                disabled={
+                  calculateUrbitIdNumber === "invalid" || !compareInLowerCase(owner, ethers.constants.AddressZero)
+                }
+                onClick={async () => {
+                  console.log("test");
+                }}
+              >
+                Mint at faucet
+              </Button>
             </Stack>
           </Unit>
-          <Unit header="Wallet Connect" position="relative">
-            <Stack>
-              <HStack position="absolute" top="0" right="0" p="4">
-                <Text fontSize="xs" color={configJsonFile.style.color.link} fontWeight="bold">
-                  <Link href={"https://example.walletconnect.org"} target={"_blank"}>
-                    Example
-                  </Link>
-                </Text>
-                <Text fontSize="xs" fontWeight={"bold"}>
-                  <IconButton
-                    size="xs"
-                    variant={"ghost"}
-                    shadow="none"
-                    icon={<AiOutlineQrcode size="24" />}
-                    aria-label="qrcode"
-                    color={configJsonFile.style.color.link}
-                    cursor="pointer"
-                    disabled={!!walletConnect.isConnected}
-                    onClick={qrCodeScannerModal.onOpen}
-                  />
-                </Text>
-              </HStack>
-              <Stack spacing="3.5">
-                <Stack spacing="0">
+          {calculateUrbitIdNumber !== "invalid" && (
+            <>
+              <Unit header="Account Abstraction" position="relative">
+                <Stack>
+                  <Stack spacing="1">
+                    <Text fontSize="sm" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
+                      Calculated contract wallet address
+                    </Text>
+                    <Text fontSize="xs" color={configJsonFile.style.color.link}>
+                      {/* <Link href={`${connected.networkConfig.explorer.url}/address/${aaWallet.address}`} target={"_blank"}>
+                    {aaWallet.address}
+                  </Link> */}{" "}
+                    </Text>
+                  </Stack>
+                  <Stack spacing="1">
+                    <Text fontSize="xs" fontWeight={"bold"} color={configJsonFile.style.color.black.text.secondary}>
+                      ETH
+                    </Text>
+                    <Text fontSize="xs" color={configJsonFile.style.color.black.text.secondary}>
+                      <Text as="span" mr="1">
+                        {/* {aaWallet.ethFormatedBalance} */}
+                      </Text>
+                      <Text as="span">ETH</Text>
+                    </Text>
+                  </Stack>
+                </Stack>
+              </Unit>
+
+              <Unit header="Wallet Connect" position="relative">
+                <Stack>
+                  <HStack position="absolute" top="0" right="0" p="4">
+                    <Text fontSize="xs" color={configJsonFile.style.color.link} fontWeight="bold">
+                      <Link href={"https://example.walletconnect.org"} target={"_blank"}>
+                        Example
+                      </Link>
+                    </Text>
+                    <Text fontSize="xs" fontWeight={"bold"}>
+                      <IconButton
+                        size="xs"
+                        variant={"ghost"}
+                        shadow="none"
+                        icon={<AiOutlineQrcode size="24" />}
+                        aria-label="qrcode"
+                        color={configJsonFile.style.color.link}
+                        cursor="pointer"
+                        disabled={!!walletConnect.isConnected}
+                        onClick={qrCodeScannerModal.onOpen}
+                      />
+                    </Text>
+                  </HStack>
                   {!walletConnect.app && (
                     <Text fontSize="xs" fontWeight={"medium"} color={configJsonFile.style.color.black.text.secondary}>
-                      Not Connected
+                      Not connected
                     </Text>
                   )}
                   {walletConnect.app && (
@@ -126,8 +195,7 @@ const IssuePage: NextPage = () => {
                       </Link>
                     </Text>
                   )}
-                </Stack>
-                <Stack>
+
                   <Input
                     placeholder={"wc:"}
                     type={"text"}
@@ -145,9 +213,9 @@ const IssuePage: NextPage = () => {
                     {!walletConnect.isConnected ? "Connect" : "Disconnect"}
                   </Button>
                 </Stack>
-              </Stack>
-            </Stack>
-          </Unit>
+              </Unit>
+            </>
+          )}
         </Stack>
       )}
 
@@ -171,4 +239,4 @@ const IssuePage: NextPage = () => {
   );
 };
 
-export default IssuePage;
+export default HomePage;
