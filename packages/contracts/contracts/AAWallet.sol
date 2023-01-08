@@ -19,7 +19,7 @@ contract AAWallet is BaseWallet {
   uint96 private _nonce;
 
   address azimuth;
-  uint256 orbitId;
+  uint256 urbitId;
 
   function nonce() public view virtual override returns (uint256) {
     return _nonce;
@@ -36,10 +36,10 @@ contract AAWallet is BaseWallet {
   // solhint-disable-next-line no-empty-blocks
   receive() external payable {}
 
-  constructor(IEntryPoint anEntryPoint, address _azimuth, uint256 _orbitId) {
+  constructor(IEntryPoint anEntryPoint, address _azimuth, uint256 _urbitId) {
     _entryPoint = anEntryPoint;
     azimuth = _azimuth;
-    orbitId = _orbitId;
+    urbitId = _urbitId;
   }
 
   modifier onlyOwner() {
@@ -48,7 +48,7 @@ contract AAWallet is BaseWallet {
   }
 
   function owner() public view returns (address) {
-    return IMockAzimuth(azimuth).getOwner(orbitId);
+    return IMockAzimuth(azimuth).getOwner(urbitId);
   }
 
   function _onlyOwner() internal view {

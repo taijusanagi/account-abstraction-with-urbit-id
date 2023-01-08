@@ -9,16 +9,21 @@ contract AAWalletDeployer {
   function deployWallet(
     IEntryPoint entryPoint,
     address _azimuth,
-    uint256 _orbitId,
+    uint256 _urbitId,
     uint256 salt
   ) public returns (AAWallet) {
-    return new AAWallet{salt: bytes32(salt)}(entryPoint, _azimuth, _orbitId);
+    return new AAWallet{salt: bytes32(salt)}(entryPoint, _azimuth, _urbitId);
   }
 
   // this is helper function for rapid development
-  function getCreate2Address(IEntryPoint entryPoint, address owner, uint256 salt) public view returns (address) {
+  function getCreate2Address(
+    IEntryPoint entryPoint,
+    address _azimuth,
+    uint256 _urbitId,
+    uint256 salt
+  ) public view returns (address) {
     bytes memory creationCode = type(AAWallet).creationCode;
-    bytes memory initCode = abi.encodePacked(creationCode, abi.encode(entryPoint, owner));
+    bytes memory initCode = abi.encodePacked(creationCode, abi.encode(entryPoint, _azimuth, _urbitId));
     bytes32 initCodeHash = keccak256(initCode);
     return Create2.computeAddress(bytes32(salt), initCodeHash, address(this));
   }

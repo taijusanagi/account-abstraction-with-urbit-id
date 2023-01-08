@@ -9,7 +9,8 @@
     "explorer": { "name": "Etherscan", "url": "https://goerli.etherscan.io" },
     "deployments": {
       "entryPoint": "0x3614193F05116eB956b1540CfA1843BEf66115b8",
-      "factory": "0x30f5161891463f49a85b1289c3b235a3a6607144"
+      "factory": "0xcC9201F3F14Fd5d7400990080332070CC307bC76",
+      "azimuth": "0xB146Cb26B3E436f46513d5cacFBB3688d3aF13b2"
     }
   }
 }

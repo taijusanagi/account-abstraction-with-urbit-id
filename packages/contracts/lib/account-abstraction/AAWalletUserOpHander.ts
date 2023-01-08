@@ -19,6 +19,8 @@ export interface AAWalletUserOpHandlerParams {
   index?: number;
   entryPointAddress: string;
   factoryAddress: string;
+  azimuth: string;
+  urbitId: string;
   overheads?: Partial<GasOverheads>;
 }
 
@@ -28,6 +30,8 @@ export class AAWalletUserOpHandler {
   provider: ethers.providers.Provider;
   entryPoint: EntryPoint;
   factory: AAWalletDeployer;
+  azimuth: string;
+  urbitId: string;
   chainId?: ChainId;
   signerAddress?: string;
   AAWallet?: AAWallet;
@@ -43,6 +47,8 @@ export class AAWalletUserOpHandler {
     this.provider = provider;
     this.entryPoint = EntryPoint__factory.connect(params.entryPointAddress, this.provider);
     this.factory = AAWalletDeployer__factory.connect(params.factoryAddress, this.provider);
+    this.azimuth = params.azimuth;
+    this.urbitId = params.urbitId;
     this.overheads = params.overheads;
   }
 
@@ -69,8 +75,7 @@ export class AAWalletUserOpHandler {
   }
 
   async _getCounterFactualAddress(): Promise<string> {
-    const signerAddress = await this._getSignerAddress();
-    return await this.factory.getCreate2Address(this.entryPoint.address, signerAddress, this.index);
+    return await this.factory.getCreate2Address(this.entryPoint.address, this.azimuth, this.urbitId, this.index);
   }
 
   async _getAAWallet() {
@@ -87,10 +92,14 @@ export class AAWalletUserOpHandler {
   async _getInitCode() {
     const { isDeployed } = await this._getAAWallet();
     if (!isDeployed) {
-      const signerAddress = await this._getSignerAddress();
       const initCode = ethers.utils.hexConcat([
         this.factory.address,
-        this.factory.interface.encodeFunctionData("deployWallet", [this.entryPoint.address, signerAddress, this.index]),
+        this.factory.interface.encodeFunctionData("deployWallet", [
+          this.entryPoint.address,
+          this.azimuth,
+          this.urbitId,
+          this.index,
+        ]),
       ]);
       return initCode;
     } else {
