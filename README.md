@@ -63,4 +63,4 @@ Create2 calculates salt to determine the contract address, in this MVP, it takes
 
 Account Abstraction user operation signature is verified against the Urbit ID owner address.
 
-So Urbit ID owner can bring Urbit ID and use it as a wallet without any pre configuration.
+So Urbit ID owner can bring Urbit ID and use it as a wallet without any pre-configuration.
